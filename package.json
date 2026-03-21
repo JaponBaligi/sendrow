@@ -1,7 +1,7 @@
 {
     "scripts": {
         "lint": "ESLINT_USE_FLAT_CONFIG=false eslint frontend",
-        "start": "block run --port $PORT",
+        "start": "node scripts/write-remote-config.js && block run --port $PORT",
         "build": "echo 'no build step'"
     },
     "dependencies": {
