@@ -4,7 +4,8 @@
         "start": "node server/index.js",
         "build": "echo 'no build step'",
         "block:dev": "node scripts/write-remote-config.js && block run --port 9000",
-        "generate-copy-link": "node scripts/generate-copy-link.js"
+        "generate-copy-link": "node scripts/generate-copy-link.js",
+        "list-tables": "node --env-file=.env scripts/list-tables.js"
     },
     "dependencies": {
         "express": "^4.21.2"
