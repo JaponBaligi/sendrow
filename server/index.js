@@ -9,8 +9,9 @@ const PAT = process.env.AIRTABLE_PAT;
 const BASE_ID = process.env.AIRTABLE_BASE_ID;
 const SECRET = process.env.COPY_LINK_SECRET;
 const STATIC_TOKEN = process.env.COPY_STATIC_TOKEN;
-const SOURCE_TABLE = process.env.SOURCE_TABLE_NAME || 'News';
-const TARGET_TABLE = process.env.TARGET_TABLE_NAME || 'Create';
+/** Prefer table ids (`tbl…`) — names must match exactly and are easier to get wrong. */
+const SOURCE_TABLE = process.env.SOURCE_TABLE_ID || process.env.SOURCE_TABLE_NAME || 'News';
+const TARGET_TABLE = process.env.TARGET_TABLE_ID || process.env.TARGET_TABLE_NAME || 'Create';
 
 /**
  * @returns {{ from: string, to: string }[]}
@@ -183,33 +184,51 @@ app.get('/api/copy', async (req, res) => {
             );
     }
 
+    let data;
     try {
         const path = `/${encodeURIComponent(SOURCE_TABLE)}/${encodeURIComponent(recordId)}`;
-        const data = await airtableGet(path);
-        const src = data.fields || {};
-        const fields = {};
-        for (const { from, to } of FIELD_MAP) {
-            if (Object.prototype.hasOwnProperty.call(src, from)) {
-                fields[to] = src[from];
-            }
-        }
-        await airtablePost(TARGET_TABLE, { fields });
-        return res
-            .status(200)
-            .type('html')
-            .send(
-                html(
-                    `<p>Copied to table <strong>${escapeHtml(TARGET_TABLE)}</strong>.</p><p>You can close this tab.</p>`,
-                    'Done',
-                ),
-            );
+        data = await airtableGet(path);
     } catch (e) {
-        console.error(e);
-        return res
-            .status(500)
-            .type('html')
-            .send(html(`<p>Error: ${escapeHtml(e.message)}</p>`));
+        console.error('airtable GET source', e);
+        return res.status(500).type('html').send(
+            html(
+                `<p><strong>Could not read the source row</strong> (table <code>${escapeHtml(SOURCE_TABLE)}</code>, record <code>${escapeHtml(String(recordId))}</code>).</p>` +
+                    `<p>${escapeHtml(e.message)}</p>` +
+                    '<p>Check: <code>AIRTABLE_BASE_ID</code> is this base; PAT has <strong>data.records:read</strong> and access to the base; <code>SOURCE_TABLE_ID</code> or <code>SOURCE_TABLE_NAME</code> matches the News table (open table in Airtable — URL contains <code>tbl…</code>).</p>',
+            ),
+        );
     }
+
+    const src = data.fields || {};
+    const fields = {};
+    for (const { from, to } of FIELD_MAP) {
+        if (Object.prototype.hasOwnProperty.call(src, from)) {
+            fields[to] = src[from];
+        }
+    }
+
+    try {
+        await airtablePost(TARGET_TABLE, { fields });
+    } catch (e) {
+        console.error('airtable POST target', e);
+        return res.status(500).type('html').send(
+            html(
+                `<p><strong>Could not create row in Create table</strong> (<code>${escapeHtml(TARGET_TABLE)}</code>).</p>` +
+                    `<p>${escapeHtml(e.message)}</p>` +
+                    '<p>Check: PAT has <strong>data.records:write</strong>; <code>TARGET_TABLE_ID</code> or <code>TARGET_TABLE_NAME</code> matches Create; field names in <code>COPY_FIELD_MAP</code> exist on the Create table.</p>',
+            ),
+        );
+    }
+
+    return res
+        .status(200)
+        .type('html')
+        .send(
+            html(
+                `<p>Copied to table <strong>${escapeHtml(TARGET_TABLE)}</strong>.</p><p>You can close this tab.</p>`,
+                'Done',
+            ),
+        );
 });
 
 const miss = requiredEnv();

@@ -35,6 +35,15 @@ cp .env.example .env
 
 3. Every row uses the same formula; `RECORD_ID()` picks the current row.
 
+### `INVALID_PERMISSIONS_OR_MODEL_NOT_FOUND`
+
+Usually one of:
+
+1. **Personal access token** — At [airtable.com/create/tokens](https://airtable.com/create/tokens), enable **data.records:read** and **data.records:write**, and under access add **this base** (or the whole workspace).
+2. **`AIRTABLE_BASE_ID`** — Must be the `app…` id of the base that contains **News** and **Create** (from the browser URL when the base is open).
+3. **Table name** — Must match **exactly** (case, spaces). Safer: set **`SOURCE_TABLE_ID`** and **`TARGET_TABLE_ID`** to the `tbl…` values from the URL when you open each table in Airtable.
+4. **Wrong record** — `RECORD_ID()` must be a row in the **source** table (News).
+
 ## Scripts
 
 | Script | Purpose |
