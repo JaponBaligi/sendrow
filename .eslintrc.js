@@ -26,4 +26,17 @@ module.exports = {
             version: 'detect',
         },
     },
+    overrides: [
+        {
+            files: ['server/**/*.js', 'scripts/**/*.js'],
+            env: { node: true },
+            parserOptions: {
+                ecmaVersion: 2022,
+                sourceType: 'script',
+            },
+            globals: {
+                fetch: 'readonly',
+            },
+        },
+    ],
 };

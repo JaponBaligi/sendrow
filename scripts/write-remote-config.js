@@ -1,9 +1,3 @@
-/**
- * Ensures .block/remote.json exists for `block run`.
- * Set any of these pairs (Railway often uses short names):
- *   AIRTABLE_BLOCK_ID + AIRTABLE_BASE_ID
- *   blockId + baseId
- */
 const fs = require('fs');
 const path = require('path');
 
