@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const express = require('express');
 
 const DEFAULT_FIELD_MAP =
-    'Title:Name,Content:Text,Title:Caption';
+    'Title:Name,Content:Text,Title:Caption,Category:Category';
 
 const PORT = Number(process.env.PORT) || 3000;
 const PAT = process.env.AIRTABLE_PAT;

@@ -22,7 +22,7 @@ cp .env.example .env
 | `AIRTABLE_BASE_ID` | Base id (`app…`). |
 | `COPY_STATIC_TOKEN` | Long random secret: same value in Railway and in the button URL formula (Option 1). |
 | `COPY_LINK_SECRET` | Secret for HMAC-signed links from `generate-copy-link` (Option 2). You can set **both** token types. |
-| `COPY_FIELD_MAP` | Optional. Comma-separated `SourceField:TargetField` pairs. Default: `Title:Name,Content:Text,Title:Caption`. |
+| `COPY_FIELD_MAP` | Optional. Comma-separated `SourceField:TargetField` pairs. Default: `Title:Name,Content:Text,Title:Caption,Category:Category`. |
 
 ### Airtable button (Option 1)
 
